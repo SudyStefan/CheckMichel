@@ -58,7 +58,7 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
       ...popupItems,
       {
         id: todo.id,
-        text: todo.text,
+        text: todo.summary,
         prevStatus: todo.status,
         currentStatus: newStatus
       }
@@ -96,14 +96,13 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
         .catch((err) => console.error(`Failed to sync: ${err}`));
   };
 
-  const addTodo = (text: string, type: TodoType, period = undefined) => {
+  const addTodo = (text: string, type: TodoType) => {
     const todo: Todo = {
       id: uuid(),
-      text: text,
+      summary: text,
       status: TodoStatus.OPEN,
       creationDate: new Date(),
-      type: type,
-      periodSeconds: period
+      type: type
     };
 
     if (online) {

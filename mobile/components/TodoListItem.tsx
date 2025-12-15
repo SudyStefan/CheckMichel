@@ -39,7 +39,7 @@ export const TodoListItem = ({
       testID="TodoItem"
     >
       <Text style={styles.itemText} numberOfLines={1}>
-        {item.text}
+        {item.summary}
       </Text>
       <Pressable onPress={() => onPress(item.id)}>
         <Ionicons

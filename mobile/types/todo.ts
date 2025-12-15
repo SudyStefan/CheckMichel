@@ -9,31 +9,31 @@ export enum TodoType {
   PERIODIC = "PERIODIC"
 }
 
-export enum TimeInSeconds {
-  DAY = 60 * 60 * 24,
-  WEEK = DAY * 7
-}
-
 export interface TodoDTO {
   id?: string;
-  text: string;
+  summary: string;
   description?: string;
   status: string;
-  creationDate: string;
   type: string;
+  creationDate: string;
   lastChecked?: string;
-  periodSeconds?: number;
+  eventDate?: Date;
+  reminderFirst?: Date;
+  reminderSecond?: Date;
 }
 
 export interface Todo {
   id: string;
-  text: string;
+  summary: string;
   description?: string;
   status: TodoStatus;
-  creationDate: Date;
   type: TodoType;
-  lastChecked?: Date;
-  periodSeconds?: number;
+  creationDate: Date;
 }
 
-export type TodoDraft = Omit<Todo, "id">;
+export interface CalendarTodo extends Todo {
+  calenderRef?: string;
+  eventDate: Date;
+  reminderFirst?: Date;
+  reminderSecond?: Date;
+}
