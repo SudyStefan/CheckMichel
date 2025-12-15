@@ -6,7 +6,7 @@ export enum TodoStatus {
 
 export enum TodoType {
   SINGLE = "SINGLE",
-  PERIODIC = "PERIODIC"
+  CALENDAR = "CALENDAR"
 }
 
 export interface TodoDTO {

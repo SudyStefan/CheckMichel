@@ -86,6 +86,7 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
     offlineStorage.upsertTodo(revertedTodo);
   };
 
+  // NEEDS REWORK (BUGGY!)
   const syncOnTimeout = (id: string) => {
     online &&
       todoService

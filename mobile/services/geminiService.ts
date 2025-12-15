@@ -1,13 +1,28 @@
 import axios from "axios";
 import { Platform } from "react-native";
+import { CalendarTodo, Todo, TodoStatus, TodoType } from "../types/todo";
 
 class GeminiService {
-  public fetchFromTranscript = (text: string): Promise<string> => {
+  public fetchFromTranscript = (text: string): Promise<Todo | CalendarTodo> => {
     return axios
       .post("http://localhost:8080/todo", text)
       .then((res) => {
         console.log(res.data);
-        return (res.data.responseText as string).replace('"', "");
+        const todo: Todo = {
+          id: "", //uuid(),
+          summary: res.data.responseText.replace('"', ""),
+          status: TodoStatus.OPEN,
+          creationDate: new Date(),
+          type: res.data.type,
+          description: res.data.description
+        };
+
+        return res.data.type === TodoType.SINGLE
+          ? todo
+          : {
+              ...todo,
+              eventDate: new Date(res.data.eventDate)
+            };
       })
       .catch((err) => {
         console.error(`Error trying to prompt gemini:`, err);
