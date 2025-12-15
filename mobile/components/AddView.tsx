@@ -1,21 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 import { styles, colors } from "../styles/styles";
 import { TextInput } from "react-native-gesture-handler";
-import { TodoType } from "../types/todo";
+import { Todo, TodoStatus, TodoType } from "../types/todo";
+import { v4 as uuid } from "uuid";
 
 export type AddViewProps = {
   isVisible: boolean;
-  onAdd: (text: string, type: TodoType) => void;
+  onAdd: (todo: Todo) => void;
   onClose: () => void;
 };
 
 export const AddView = ({ isVisible, onAdd, onClose }: AddViewProps) => {
-  const [text, setText] = React.useState("");
-  const inputRef = React.useRef<TextInput>(null);
+  const [summary, setSummary] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [type, setType] = React.useState<TodoType>(TodoType.SINGLE);
+
+  const summaryRef = React.useRef<TextInput>(null);
+  const descriptionRef = React.useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (!isVisible) {
+      setSummary("");
+      setDescription("");
+      setType(TodoType.SINGLE);
+    }
+  }, [isVisible]);
 
   const initClose = () => {
-    setText("");
+    onAdd({
+      id: uuid(),
+      summary: summary,
+      description: description,
+      status: TodoStatus.OPEN,
+      creationDate: new Date(),
+      type: type
+    });
     onClose();
   };
 
@@ -25,24 +45,25 @@ export const AddView = ({ isVisible, onAdd, onClose }: AddViewProps) => {
       animationType="fade"
       transparent={true}
       style={styles.fullScreenView}
-      onShow={() => inputRef.current?.focus()}
+      onShow={() => summaryRef.current?.focus()}
     >
       <View style={styles.addView}>
         <TextInput
-          ref={inputRef}
+          ref={summaryRef}
           style={{ ...styles.addText, textAlign: "center" }}
           placeholder="todo name..."
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={summary}
+          onChangeText={(text) => setSummary(text)}
+        />
+        <TextInput
+          ref={descriptionRef}
+          style={{ ...styles.addText, textAlign: "center" }}
+          placeholder="description (optional)..."
+          value={description}
+          onChangeText={(text) => setDescription(text)}
         />
         <View style={{ flexDirection: "row", marginLeft: 10 }}>
-          <Pressable
-            onPress={() => {
-              onAdd(text, TodoType.SINGLE);
-              initClose();
-            }}
-            style={styles.pressableButton}
-          >
+          <Pressable onPress={initClose} style={styles.pressableButton}>
             <Text style={styles.addText}>ADD</Text>
           </Pressable>
           <Pressable

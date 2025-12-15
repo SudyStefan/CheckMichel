@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Platform } from "react-native";
 import { CalendarTodo, Todo, TodoStatus, TodoType } from "../types/todo";
+import { v4 as uuid } from "uuid";
 
 class GeminiService {
   public fetchFromTranscript = (text: string): Promise<Todo | CalendarTodo> => {
@@ -9,7 +10,7 @@ class GeminiService {
       .then((res) => {
         console.log(res.data);
         const todo: Todo = {
-          id: "", //uuid(),
+          id: uuid(),
           summary: res.data.responseText.replace('"', ""),
           status: TodoStatus.OPEN,
           creationDate: new Date(),

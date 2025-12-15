@@ -11,7 +11,6 @@ import { InfoPopup, PopupItem } from "./InfoPopup";
 import { todoService } from "../services/todoService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { geminiService } from "../services/geminiService";
-import { v4 as uuid } from "uuid";
 import { OfflineStorage } from "../offline_storage/OfflineStorage";
 import { VoiceView } from "./VoiceView";
 
@@ -40,9 +39,9 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
       console.log("received transcript:", transcript);
       geminiService
         .fetchFromTranscript(transcript)
-        .then((responseText) => {
-          console.log("gemini response:", responseText);
-          addTodo(responseText, TodoType.SINGLE);
+        .then((response) => {
+          console.log("gemini response:", response.summary);
+          addTodo(response);
         })
         .catch((err) => {
           console.error("Error fetching from Gemini:", err);
@@ -97,15 +96,7 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
         .catch((err) => console.error(`Failed to sync: ${err}`));
   };
 
-  const addTodo = (text: string, type: TodoType) => {
-    const todo: Todo = {
-      id: uuid(),
-      summary: text,
-      status: TodoStatus.OPEN,
-      creationDate: new Date(),
-      type: type
-    };
-
+  const addTodo = (todo: Todo) => {
     if (online) {
       todoService
         .postTodo(todo)
@@ -151,7 +142,7 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
     <SafeView style={styles.root} testID="Root">
       <AddView
         isVisible={addViewVisible}
-        onAdd={(text: string, type: TodoType) => addTodo(text, type)}
+        onAdd={(todo: Todo) => addTodo(todo)}
         onClose={() => setAddViewVisible(false)}
       />
       <VoiceView
