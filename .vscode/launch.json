@@ -4,11 +4,11 @@
       "type": "java",
       "name": "Spring Boot-GeminiApplication<gemini>",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/api_gemini",
       "mainClass": "api.gemini.GeminiApplication",
       "projectName": "gemini",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/api_gemini/.env"
     }
   ]
 }

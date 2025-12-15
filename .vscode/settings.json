@@ -3,5 +3,17 @@
   "java.configuration.updateBuildConfiguration": "interactive",
   "java.debug.settings.onBuildFailureProceed": true,
   "java.autobuild.enabled": false,
-  "java.errors.incompleteClasspath.severity": "ignore"
+  "java.errors.incompleteClasspath.severity": "ignore",
+  "files.exclude": {
+      "/mobile/node_modules/@expo": true,
+      "/mobile/node_modules/expo*": true
+  },
+  "search.exclude": {
+      "/mobile/node_modules/@expo": true,
+      "/mobile/node_modules/expo*": true
+  },
+  "files.watcherExclude": {
+      "/mobile/node_modules/@expo": true,
+      "/mobile/node_modules/expo*": true
+  }
 }
