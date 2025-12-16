@@ -1,20 +1,20 @@
 import axios from "axios";
 import { Platform } from "react-native";
-import { CalendarTodo, Todo, TodoStatus, TodoType } from "../types/todo";
+import { Todo, TodoStatus, TodoType } from "../types/todo";
 import { v4 as uuid } from "uuid";
 
 class GeminiService {
-  public fetchFromTranscript = (text: string): Promise<Todo | CalendarTodo> => {
+  public fetchFromTranscript = (text: string): Promise<Todo> => {
     return axios
       .post("http://localhost:8080/todo", text)
       .then((res) => {
         console.log(res.data);
         const todo: Todo = {
           id: uuid(),
-          summary: res.data.responseText.replace('"', ""),
+          summary: res.data.summary,
           status: TodoStatus.OPEN,
           creationDate: new Date(),
-          type: res.data.type,
+          type: res.data.type ? TodoType.CALENDAR : TodoType.SINGLE,
           description: res.data.description
         };
 
@@ -22,7 +22,7 @@ class GeminiService {
           ? todo
           : {
               ...todo,
-              eventDate: new Date(res.data.eventDate)
+              eventDate: new Date(res.data.date * 1000)
             };
       })
       .catch((err) => {

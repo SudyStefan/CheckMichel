@@ -16,34 +16,33 @@ import api.gemini.services.GeminiService;
 @CrossOrigin(origins = "http://localhost:8081")
 public class GeminiController {
   @PostMapping("/todo")
-  public GeminiResponse createGeminiTodo(@RequestBody String requestText) {
-    final GeminiResponse response = GeminiService.promptForTodo(requestText);
+  public String createGeminiTodo(@RequestBody String requestText) {
+    final String response = GeminiService.promptForTodo(requestText);
     System.out.print(response);
     return response;
   }
   
-  @GetMapping("/todo")
-  public GeminiResponse testGemini() {
-    return GeminiService.promptForTodo("I'm out of toilet paper");
-  }
+  // @GetMapping("/todo")
+  // public GeminiResponse testGemini() {
+  //   return GeminiService.promptForTodo("I'm out of toilet paper");
+  // }
 
-  @PostMapping("/todoAudio")
-  public GeminiResponse transcribeAudio(@RequestPart("audiofile") MultipartFile audioFile) {
-    try {
-        String fileName = audioFile.getOriginalFilename();
-        String contentType = audioFile.getContentType();
-        long fileSize = audioFile.getSize();
-        byte[] fileBytes = audioFile.getBytes();
+  // @PostMapping("/todoAudio")
+  // public GeminiResponse transcribeAudio(@RequestPart("audiofile") MultipartFile audioFile) {
+  //   try {
+  //       String fileName = audioFile.getOriginalFilename();
+  //       String contentType = audioFile.getContentType();
+  //       long fileSize = audioFile.getSize();
+  //       byte[] fileBytes = audioFile.getBytes();
 
-        System.out.println("Processing file: " + fileName + 
-                               ", Type: " + contentType + 
-                               ", Size: " + fileSize);
-        GeminiResponse result = GeminiService.speechToText(fileBytes);
-        System.out.println("Response: " + result.getResponseText());
-        return result;
-    } catch (Exception e) {
-      return null;
-    }
-  }
-  
+  //       System.out.println("Processing file: " + fileName + 
+  //                              ", Type: " + contentType + 
+  //                              ", Size: " + fileSize);
+  //       GeminiResponse result = GeminiService.speechToText(fileBytes);
+  //       System.out.println("Response: " + result.getResponseText());
+  //       return result;
+  //   } catch (Exception e) {
+  //     return null;
+  //   }
+  // }
 }

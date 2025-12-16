@@ -9,8 +9,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 public class GeminiResponse {
-  private String responseText;
+  private String summary;
   private String description;
+  private Boolean type;
+  private Number date;
 }
