@@ -14,7 +14,7 @@ export const DonePage = ({ data, onUncheck, onDelete }: DonePageProp) => {
     <FlatList
       data={data.filter(
         (data) =>
-          data.type === TodoType.SINGLE && data.status === TodoStatus.DONE
+          data.type === TodoType.CHECK && data.status === TodoStatus.DONE
       )}
       keyExtractor={(item) => item.id}
       style={{ flex: 1 }}

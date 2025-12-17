@@ -14,11 +14,11 @@ class GeminiService {
           summary: res.data.summary,
           status: TodoStatus.OPEN,
           creationDate: new Date(),
-          type: res.data.type ? TodoType.CALENDAR : TodoType.SINGLE,
+          type: res.data.type ? TodoType.CALENDAR : TodoType.CHECK,
           description: res.data.description
         };
 
-        return res.data.type === TodoType.SINGLE
+        return res.data.type === TodoType.CHECK
           ? todo
           : {
               ...todo,

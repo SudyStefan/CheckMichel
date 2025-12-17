@@ -1,7 +1,6 @@
 package api.gemini.services;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.genai.Client;
@@ -11,8 +10,6 @@ import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
 import com.google.genai.types.Schema;
 import com.google.genai.types.Type;
-
-import api.gemini.models.GeminiResponse;
 
 public class GeminiService {
   public static String promptForTodo(String text) {
@@ -33,7 +30,7 @@ public class GeminiService {
     Schema typeSchema = Schema.builder()
       .type(Type.Known.BOOLEAN)
       .title("type")
-      .description("Todo items can be either a basic todo (false) or a calendar event (true).")
+      .description("Todo items can be either a basic checklist event (false) or a calendar event (true).")
       .build();
 
     Schema eventDate = Schema.builder()

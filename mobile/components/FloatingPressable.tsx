@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, Pressable, StyleProp, ViewStyle } from "react-native";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
 import { colors } from "../styles/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -16,11 +16,7 @@ export const FloatingPressable = ({
 }: FloatingPressableProp) => {
   return (
     <Pressable onPress={() => onPress()} style={style}>
-      <Ionicons
-        name={iconName}
-        size={Dimensions.get("window").height * 0.05}
-        color={colors.primaryLight}
-      />
+      <Ionicons name={iconName} size={60} color={colors.primaryLight} />
     </Pressable>
   );
 };

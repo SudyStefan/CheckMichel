@@ -5,7 +5,7 @@ export enum TodoStatus {
 }
 
 export enum TodoType {
-  SINGLE = "SINGLE",
+  CHECK = "CHECK",
   CALENDAR = "CALENDAR"
 }
 

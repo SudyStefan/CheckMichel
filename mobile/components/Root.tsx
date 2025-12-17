@@ -120,7 +120,7 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
     <SinglePage
       data={todos.filter(
         (item) =>
-          item.type === TodoType.SINGLE && item.status === TodoStatus.OPEN
+          item.type === TodoType.CHECK && item.status === TodoStatus.OPEN
       )}
       onCheck={(id: string) => changeTodo(id, TodoStatus.DONE)}
     />
@@ -130,7 +130,7 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
     <DonePage
       data={todos.filter(
         (item) =>
-          item.type === TodoType.SINGLE && item.status === TodoStatus.DONE
+          item.type === TodoType.CHECK && item.status === TodoStatus.DONE
       )}
       onUncheck={(id: string) => changeTodo(id, TodoStatus.OPEN)}
       onDelete={(id: string) => changeTodo(id, TodoStatus.DELETED)}

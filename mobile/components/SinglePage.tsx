@@ -14,7 +14,7 @@ export const SinglePage = ({ data, onCheck }: SinglePageProp) => {
       testID="SinglePage"
       data={data.filter(
         (data) =>
-          data.type === TodoType.SINGLE && data.status === TodoStatus.OPEN
+          data.type === TodoType.CHECK && data.status === TodoStatus.OPEN
       )}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.singleList}

@@ -40,6 +40,7 @@ export const styles = StyleSheet.create({
   pressableButton: {
     flex: 1,
     marginVertical: 5,
+    minWidth: 200,
     padding: 10,
     paddingHorizontal: 40,
     alignItems: "center",
@@ -67,16 +68,18 @@ export const styles = StyleSheet.create({
   },
   addView: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
-    paddingBottom: 250,
+    paddingTop: 200,
     backgroundColor: "rgba(0, 0, 0, 0.7)"
   },
   addText: {
     color: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
-    fontSize: 30
+    textAlign: "center",
+    fontSize: 30,
+    minHeight: 50
   },
   singleList: {
     flexGrow: 1,
@@ -130,5 +133,23 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 300,
     alignSelf: "center"
+  },
+  pressableRadioSelected: {
+    flex: 1,
+    minWidth: 200,
+    paddingHorizontal: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 3,
+    backgroundColor: "rgba(100, 100, 100, 0.5)"
+  },
+  pressableRadio: {
+    flex: 1,
+    minWidth: 200,
+    paddingHorizontal: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 3,
+    backgroundColor: colors.transparent
   }
 });
