@@ -12,7 +12,7 @@
 	<artifactId>gemini</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gemini</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Gemini API for CheckMichel</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -30,6 +30,12 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+
+		<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-docker-compose</artifactId>
+				<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,6 +1,7 @@
 package api.gemini.services;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.genai.Client;
@@ -65,35 +66,35 @@ public class GeminiService {
     return response.text();
   }
 
-  // public static GeminiResponse speechToText(byte[] audioBytes) {
-  //   String prompt = """
-  //       Process the audio file and try to extract the requested field from it.
+  public static String transcribeAudio(byte[] audioBytes) {
+    String prompt = """
+        Transcripe the spoken words in the audio file
 
-  //       Requirements:
-  //       1. Be accurate.
-  //       2. It might be in English, German and potentially German with an Austrian dialect.
-  //       """;
+        Requirements:
+        1. Be accurate.
+        2. It might be in English, German and potentially German with an Austrian dialect.
+        """;
 
-  //   Client client = Client.builder().apiKey(System.getenv("GEMINI_API_KEY")).build();
+    Client client = Client.builder().apiKey(System.getenv("GEMINI_API_KEY")).build();
 
-  //   ArrayList<Part> parts = new ArrayList<>();
-  //   parts.add(Part.fromBytes(audioBytes, "audio/m4a"));
-  //   parts.add(Part.fromText(prompt));
+    ArrayList<Part> parts = new ArrayList<>();
+    parts.add(Part.fromBytes(audioBytes, "audio/m4a"));
+    parts.add(Part.fromText(prompt));
 
-  //   Content content = Content.builder().parts(parts).build();
+    Content content = Content.builder().parts(parts).build();
 
-  //   Schema schema = Schema.builder()
-  //     .type(Type.Known.STRING)
-  //     .title("text")
-  //     .description("A concise summary of the audio, four words or less, that can be put into a checklist/todo list.")
-  //     .build();
+    Schema schema = Schema.builder()
+      .type(Type.Known.STRING)
+      .title("transcript")
+      .description("The fully transcribed text")
+      .build();
           
-  //   GenerateContentConfig config = GenerateContentConfig.builder()
-  //     .responseMimeType("application/json")
-  //     .responseSchema(schema)
-  //     .build();
+    GenerateContentConfig config = GenerateContentConfig.builder()
+      .responseMimeType("application/json")
+      .responseSchema(schema)
+      .build();
 
-  //   GenerateContentResponse response = client.models.generateContent("gemini-2.5-flash", content, config);
-  //   return new GeminiResponse(response.text(), "");
-  // }
+    GenerateContentResponse response = client.models.generateContent("gemini-2.5-flash", content, config);
+    return promptForTodo(response.text());
+  }
 }
