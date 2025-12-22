@@ -26,7 +26,6 @@ class GeminiService {
             };
       })
       .catch((err) => {
-        console.error(`Error trying to prompt gemini:`, err);
         throw err;
       });
   };

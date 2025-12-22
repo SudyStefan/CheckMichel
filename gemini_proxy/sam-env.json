@@ -1,6 +1,0 @@
-{
-  "MyLambdaFunction": {
-    "MY_ENV_VAR": "local_value",
-    "ANOTHER_VAR": "another_local_value"
-  }
-}

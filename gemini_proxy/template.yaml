@@ -25,6 +25,17 @@ Resources:
           Properties:
             Path: /todo
             Method: GET
+            Cors:
+              AllowOrigins:
+                - '*'
+              AllowHeaders:
+                - 'Content-Type'
+                - 'X-Amz-Date'
+                - 'Authorization'
+                - 'X-Amz-Security-Token'
+              AllowMethods:
+                - 'GET'
+                - 'OPTIONS'
 
   TodoFromTranscriptFunction:
     Type: AWS::Serverless::Function
@@ -45,6 +56,17 @@ Resources:
           Properties:
             Path: /todo
             Method: POST
+            Cors:
+              AllowOrigins:
+                - '*'
+              AllowHeaders:
+                - 'Content-Type'
+                - 'X-Amz-Date'
+                - 'Authorization'
+                - 'X-Amz-Security-Token'
+              AllowMethods:
+                - 'POST'
+                - 'OPTIONS'
 
 Outputs:
   HealthCheckApiEndpoint:
