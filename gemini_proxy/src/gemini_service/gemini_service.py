@@ -41,12 +41,15 @@ GEMINI_CONFIG = {"responseMimeType": "application/json", "responseSchema": TODO_
 
 
 def create_todo_from_transcript(event, context):
+    response_headers = {
+        "Content-Type": "application/json",
+    }
     try:
         body = json.loads(event.get("body", "{}"))
     except json.JSONDecodeError:
         return {
             "statusCode": 400,
-            "headers": {"Content-Type": "application/json"},
+            "headers": response_headers,
             "body": json.dumps({"error": "Invalid JSON in request body"}),
         }
 
@@ -54,7 +57,7 @@ def create_todo_from_transcript(event, context):
     if not transcript:
         return {
             "statusCode": 400,
-            "headers": {"Content-Type": "application/json"},
+            "headers": response_headers,
             "body": json.dumps({"error": "No transcript provided in request body"}),
         }
 
@@ -62,7 +65,7 @@ def create_todo_from_transcript(event, context):
         todo = prompt_for_todo(transcript)
         return {
             "statusCode": 200,
-            "headers": {"Content-Type": "application/json"},
+            "headers": response_headers,
             "body": json.dumps(todo),
         }
 
@@ -70,7 +73,7 @@ def create_todo_from_transcript(event, context):
         print(f"Error creating transcript: {ex}")
         return {
             "statusCode": 500,
-            "headers": {"Content-Type": "application/json"},
+            "headers": response_headers,
             "body": json.dumps({"error": str(ex)}),
         }
 

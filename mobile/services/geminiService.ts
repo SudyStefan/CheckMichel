@@ -5,8 +5,11 @@ import { v4 as uuid } from "uuid";
 
 class GeminiService {
   public fetchFromTranscript = (transcript: string): Promise<Todo> => {
+    const body = {
+      transcript: transcript
+    };
     return axios
-      .post("https://localhost:8080/todo", transcript)
+      .post("https://localhost:8080/todo", body)
       .then((res) => {
         console.log(res.data);
         const todo: Todo = {

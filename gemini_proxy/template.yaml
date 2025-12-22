@@ -30,9 +30,7 @@ Resources:
                 - '*'
               AllowHeaders:
                 - 'Content-Type'
-                - 'X-Amz-Date'
                 - 'Authorization'
-                - 'X-Amz-Security-Token'
               AllowMethods:
                 - 'GET'
                 - 'OPTIONS'
@@ -61,9 +59,7 @@ Resources:
                 - '*'
               AllowHeaders:
                 - 'Content-Type'
-                - 'X-Amz-Date'
                 - 'Authorization'
-                - 'X-Amz-Security-Token'
               AllowMethods:
                 - 'POST'
                 - 'OPTIONS'
