@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Gemini Proxy for CheckMichel
+
+Parameters:
+  GeminiApiKey:
+    Type: String
+    Description: Gemini API Key
+    NoEcho: true
+
+Resources:
+  HealthCheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: health_check.health_check
+      Runtime: python3.13
+      CodeUri: ./src/health_check/
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+        - x86_64
+      Events:
+        HealthApi:
+          Type: HttpApi
+          Properties:
+            Path: /todo
+            Method: GET
+
+  TodoFromTranscriptFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: gemini_service.create_todo_from_transcript
+      Runtime: python3.13
+      CodeUri: ./src/gemini_service/
+      MemorySize: 256
+      Timeout: 30
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          GEMINI_API_KEY: !Ref GeminiApiKey
+      Events:
+        TodoApi:
+          Type: HttpApi
+          Properties:
+            Path: /todo
+            Method: POST
+
+Outputs:
+  HealthCheckApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for HealthyCheckFunction"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/health"
+  GeminiApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for Gemini calls"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/todo"
+  HealthCheckFunctionArn:
+    Description: "Healthy Check Lambda Function ARN"
+    Value: !GetAtt HealthyCheckFunction.Arn
+  TodoFromTranscriptArn:
+    Description: "Create Todo Lambda Function From Transcript ARN"
+    Value: !GetAtt TodoFromTranscript.Arn

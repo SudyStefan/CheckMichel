@@ -4,9 +4,9 @@ import { Todo, TodoStatus, TodoType } from "../types/todo";
 import { v4 as uuid } from "uuid";
 
 class GeminiService {
-  public fetchFromTranscript = (text: string): Promise<Todo> => {
+  public fetchFromTranscript = (transcript: string): Promise<Todo> => {
     return axios
-      .post("http://localhost:8080/todo", text)
+      .post("https://localhost:8080/todo", transcript)
       .then((res) => {
         console.log(res.data);
         const todo: Todo = {
@@ -41,7 +41,7 @@ class GeminiService {
           .then((blob) => {
             formData.append("audiofile", blob);
             return axios
-              .post("http://localhost:8080/todoAudio", formData)
+              .post("https://localhost:8080/todoAudio", formData)
               .then((res) => (res.data.responseText as string).replace('"', ""))
               .catch((err) => {
                 throw err;
