@@ -25,3 +25,21 @@ def health_check(event, context):
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps(error_body),
         }
+
+
+def options_handler(event, context):
+    try:
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+                "Access-Control-Allow-Methods": "OPTIONS,POST",
+                "Access-Control-Allow-Origin": "*",
+            },
+            "body": json.dumps("Options called successfully!"),
+        }
+    except Exception as ex:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(ex)}),
+        }

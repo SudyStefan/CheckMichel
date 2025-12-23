@@ -12,9 +12,9 @@ Resources:
   HealthCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: health_check.health_check
+      Handler: lambda_options.health_check
       Runtime: python3.13
-      CodeUri: ./src/health_check/
+      CodeUri: ./src/options/
       MemorySize: 128
       Timeout: 30
       Architectures:
@@ -25,20 +25,28 @@ Resources:
           Properties:
             Path: /todo
             Method: GET
-            Cors:
-              AllowOrigins:
-                - '*'
-              AllowHeaders:
-                - 'Content-Type'
-                - 'Authorization'
-              AllowMethods:
-                - 'GET'
-                - 'OPTIONS'
+
+  OptionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_options.options_handler
+      Runtime: python3.13
+      CodeUri: ./src/options/
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+        - x86_64
+      Events:
+        HealthApi:
+          Type: HttpApi
+          Properties:
+            Path: /todo
+            Method: OPTIONS
 
   TodoFromTranscriptFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: gemini_service.create_todo_from_transcript
+      Handler: gemini_service.gemini_transcript_handler
       Runtime: python3.13
       CodeUri: ./src/gemini_service/
       MemorySize: 256
@@ -54,15 +62,6 @@ Resources:
           Properties:
             Path: /todo
             Method: POST
-            Cors:
-              AllowOrigins:
-                - '*'
-              AllowHeaders:
-                - 'Content-Type'
-                - 'Authorization'
-              AllowMethods:
-                - 'POST'
-                - 'OPTIONS'
 
 Outputs:
   HealthCheckApiEndpoint:

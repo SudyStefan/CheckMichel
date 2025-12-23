@@ -27,7 +27,7 @@ TODO_SCHEMA = {
         "type": {
             "type": "BOOLEAN",
             "title": "type",
-            "descirption": "Todo items can be either a basic checklist event (false) or a calendar event (true).",
+            "description": "Todo items can be either a basic checklist event (false) or a calendar event (true).",
         },
         "date": {
             "type": "NUMBER",
@@ -40,9 +40,12 @@ TODO_SCHEMA = {
 GEMINI_CONFIG = {"responseMimeType": "application/json", "responseSchema": TODO_SCHEMA}
 
 
-def create_todo_from_transcript(event, context):
+def gemini_transcript_handler(event, context):
     response_headers = {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,POST",
+        "Access-Control-Allow-Headers": "*",
     }
     try:
         body = json.loads(event.get("body", "{}"))
