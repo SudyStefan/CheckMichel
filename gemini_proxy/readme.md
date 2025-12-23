@@ -5,7 +5,7 @@ openssl req -x509 -newkey rsa:2048 -nodes -keyout localhost.key -out localhost.c
 sam build
 
 # run locally
-sam local start-api --port 8080 --ssl-cert-file ./localhost.cert --ssl-key-file ./localhost.key
+sam local start-api --port 8080 --ssl-cert-file ./localhost.cert --ssl-key-file ./localhost.key --warm-containers eager
 
 # build, run with hot reloading
 npm install -g nodemon

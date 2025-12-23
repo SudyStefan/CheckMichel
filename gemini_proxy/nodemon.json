@@ -1,7 +1,7 @@
 {
   "watch": ["src"],
   "ext": "py,json,yaml",
-  "exec": "sam build && sam local start-api --port 8080 --ssl-cert-file ./localhost.cert --ssl-key-file ./localhost.key",
+  "exec": "sam build && sam local start-api --port 8080 --ssl-cert-file ./localhost.cert --ssl-key-file ./localhost.key --warm-containers eager",
   "signal": "SIGTERM",
   "events": {
     "restart": "echo 'Restarting sam local with updated code...'"
