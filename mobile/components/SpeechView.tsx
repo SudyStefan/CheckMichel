@@ -4,23 +4,30 @@ import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent
 } from "expo-speech-recognition";
-import { useState, Dispatch, SetStateAction, useEffect } from "react";
+import {
+  useState,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useCallback
+} from "react";
 
-export type VoiceViewProps = {
-  isRecognizing: boolean;
-  setIsRecognizing: Dispatch<SetStateAction<boolean>>;
-  onClose: (transcripedText: string) => void;
+export type SpeechViewProps = {
+  isVisible: boolean;
+  setIsVisible: Dispatch<SetStateAction<boolean>>;
+  onStopRecognizing: (transcripedText: string) => void;
 };
 
-export const VoiceView = ({
-  isRecognizing,
-  setIsRecognizing,
-  onClose
-}: VoiceViewProps) => {
+export const SpeechView = ({
+  isVisible,
+  setIsVisible,
+  onStopRecognizing
+}: SpeechViewProps) => {
   const [transcript, setTranscript] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  useSpeechRecognitionEvent("start", () => setIsRecognizing(true));
-  useSpeechRecognitionEvent("end", () => setIsRecognizing(false));
+  useSpeechRecognitionEvent("start", () => setIsVisible(true));
+  useSpeechRecognitionEvent("end", () => onStopRecognizing(transcript));
   useSpeechRecognitionEvent("result", (event) => {
     setTranscript(event.results[0].transcript);
   });
@@ -31,7 +38,8 @@ export const VoiceView = ({
     console.warn("No match:", event);
   });
 
-  const handleStart = () => {
+  const handleStart = useCallback(() => {
+    setIsProcessing(false);
     ExpoSpeechRecognitionModule.requestPermissionsAsync().then((result) => {
       if (!result.granted) {
         console.warn("Permission not granted", result);
@@ -44,37 +52,43 @@ export const VoiceView = ({
         continuous: true
       });
     });
-  };
+  }, []);
 
-  const handleStop = () => {
+  const handleStop = useCallback(() => {
+    setIsProcessing(true);
     ExpoSpeechRecognitionModule.stop();
-    onClose(transcript);
-  };
+  }, []);
+
+  const handleTranscriptReset = useCallback(() => {
+    setTranscript("");
+  }, []);
 
   useEffect(() => {
-    isRecognizing && handleStart();
-  }, [isRecognizing]);
+    isVisible && handleStart();
+  }, [isVisible]);
 
   return (
     <Modal
-      visible={isRecognizing}
+      visible={isVisible}
       animationType="fade"
       transparent={true}
       style={styles.fullScreenView}
     >
-      {isRecognizing && (
-        <View style={styles.addView}>
-          <Text
-            style={{ ...styles.addText, textAlign: "center", marginBottom: 20 }}
-          >
-            {transcript ? transcript : "Listening..."}
-          </Text>
+      <View style={styles.addView}>
+        <Text
+          style={{ ...styles.addText, textAlign: "center", marginBottom: 20 }}
+        >
+          {transcript ? transcript : "Listening..."}
+        </Text>
+        {isProcessing ? (
+          <ActivityIndicator size={100} style={{ marginTop: 100 }} />
+        ) : (
           <View style={{ flexDirection: "row", marginLeft: 10 }}>
             <Pressable onPress={handleStop} style={styles.pressableButton}>
               <Text style={styles.addText}>PROCESS</Text>
             </Pressable>
             <Pressable
-              onPress={() => setTranscript("")}
+              onPress={handleTranscriptReset}
               style={{
                 ...styles.pressableButton,
                 backgroundColor: colors.soxred
@@ -83,9 +97,8 @@ export const VoiceView = ({
               <Text style={styles.addText}>RESET</Text>
             </Pressable>
           </View>
-          <ActivityIndicator size="large" style={styles.speechIndicator} />
-        </View>
-      )}
+        )}
+      </View>
     </Modal>
   );
 };

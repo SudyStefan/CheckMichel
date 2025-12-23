@@ -11,7 +11,6 @@ class GeminiService {
     return axios
       .post("https://localhost:8080/todo", body)
       .then((res) => {
-        console.log(res.data);
         const todo: Todo = {
           id: uuid(),
           summary: res.data.summary,

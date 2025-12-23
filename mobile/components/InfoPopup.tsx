@@ -23,7 +23,7 @@ export const InfoPopup = ({ data, onUndo, onTimeout }: UndoProp) => {
   return (
     <View style={styles.undoView} testID="InfoPopupView">
       <FlatList
-        testID="PupupList"
+        testID="Popuplist"
         data={data}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.undoList}

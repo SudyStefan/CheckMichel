@@ -1,7 +1,7 @@
 import { Todo, TodoStatus, TodoType } from "../types/todo";
 import { Platform, useWindowDimensions, View } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SinglePage } from "./SinglePage";
 import { styles, colors } from "../styles/styles";
 import { FloatingPressable } from "./FloatingPressable";
@@ -12,7 +12,7 @@ import { todoService } from "../services/todoService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { geminiService } from "../services/geminiService";
 import { OfflineStorage } from "../offline_storage/OfflineStorage";
-import { VoiceView } from "./VoiceView";
+import { SpeechView } from "./SpeechView";
 
 const routes = [
   { key: "single", title: "SINGLE" },
@@ -30,111 +30,137 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
   const [addViewVisible, setAddViewVisible] = useState(false);
   const [popupItems, setPopupItems] = useState<PopupItem[]>([]);
   const [navIndex, setNavIndex] = useState(0);
-  const [isRecognizingSpeech, setIsRecognizingSpeech] = useState(false);
+  const [speechViewVisibility, setSpeechViewVisibility] = useState(false);
 
   const layout = useWindowDimensions();
 
-  const handleTranscribedSpeech = (transcript: string) => {
+  const changeTodo = useCallback((id: string, newStatus: TodoStatus) => {
+    setTodos((currentTodos) => {
+      const todo = currentTodos.find((item) => item.id === id)!;
+      setPopupItems((currentPopups) => [
+        ...currentPopups,
+        {
+          id: todo.id,
+          text: todo.summary,
+          prevStatus: todo.status,
+          currentStatus: newStatus
+        }
+      ]);
+
+      return currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, status: newStatus } : todo
+      );
+    });
+  }, []);
+
+  const undoChange = useCallback((id: string) => {
+    setTodos((currentTodos) => {
+      let revertedStatus = TodoStatus.OPEN;
+      setPopupItems((currentPopups) => {
+        revertedStatus = currentPopups.find(
+          (popup) => popup.id === id
+        )!.prevStatus!;
+        return currentPopups.filter((popup) => popup.id !== id);
+      });
+      return currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, status: revertedStatus } : todo
+      );
+    });
+  }, []);
+
+  // NEEDS REWORK (BUGGY!)
+  const syncOnTimeout = useCallback(
+    (id: string) => {
+      if (online) {
+        todoService
+          .putTodo(todos.find((item) => item.id === id)!)
+          .then(() =>
+            setPopupItems((prev) => prev.filter((item) => item.id !== id))
+          )
+          .catch((err) => console.error(`Failed to sync: ${err}`));
+      } else {
+        offlineStorage.upsertTodo(todos.find((todo) => todo.id === id)!);
+        setPopupItems((prev) => prev.filter((item) => item.id !== id));
+      }
+    },
+    [todos, popupItems]
+  );
+
+  const toggleAddViewVisibility = useCallback(() => {
+    setAddViewVisible((prevVisibility) => !prevVisibility);
+  }, []);
+
+  const addTodo = useCallback(
+    (todo: Todo) => {
+      if (online) {
+        todoService
+          .postTodo(todo)
+          .then((newTodo) => {
+            setTodos((prev) => [...prev, newTodo]);
+            offlineStorage.upsertTodo(newTodo);
+          })
+          .catch((err) => {
+            console.error("Failed to add todo:", err);
+            //Implement adding error to popup
+          });
+      } else {
+        console.log(`Created Todo: ${todo}`);
+        offlineStorage.upsertTodo(todo);
+        setTodos([...todos, todo]);
+      }
+      toggleAddViewVisibility();
+    },
+    [online]
+  );
+
+  const toggleSpeechViewVisibility = useCallback(() => {
+    setSpeechViewVisibility((prevVisibility) => !prevVisibility);
+  }, []);
+
+  const handleTranscribedSpeech = useCallback((transcript: string) => {
     if (transcript.length > 0) {
-      console.log("received transcript:", transcript);
+      console.log("Received transcript:", transcript);
       geminiService
         .fetchFromTranscript(transcript)
         .then((response) => {
-          console.log("gemini response:", response.summary);
+          console.log("Gemini response:", response.summary);
           addTodo(response);
         })
         .catch((err) => {
           console.error("Error fetching from Gemini:", err);
-        });
+        })
+        .finally(toggleSpeechViewVisibility);
     } else {
       console.log("No transcript received.");
+      toggleSpeechViewVisibility();
     }
-  };
+  }, []);
 
-  const changeTodo = (id: string, newStatus: TodoStatus) => {
-    const todo = todos.find((item) => item.id === id)!;
-    setPopupItems([
-      ...popupItems,
-      {
-        id: todo.id,
-        text: todo.summary,
-        prevStatus: todo.status,
-        currentStatus: newStatus
-      }
-    ]);
-    setTodos(
-      todos.map((item) =>
-        item.id === id ? { ...item, status: newStatus } : item
-      )
-    );
-    offlineStorage.upsertTodo({
-      ...todo,
-      status: newStatus
-    });
-  };
-
-  const undoChange = (id: string) => {
-    const revertedTodo: Todo = {
-      ...todos.find((item) => item.id === id)!,
-      status: popupItems.find((item) => item.id === id)!.prevStatus!
-    };
-    setTodos((items) =>
-      items.map((todo) => (todo.id === id ? revertedTodo : todo))
-    );
-    setPopupItems((changed) => changed.filter((todo) => todo.id !== id));
-    offlineStorage.upsertTodo(revertedTodo);
-  };
-
-  // NEEDS REWORK (BUGGY!)
-  const syncOnTimeout = (id: string) => {
-    online &&
-      todoService
-        .putTodo(todos.find((item) => item.id === id)!)
-        .then(() =>
-          setPopupItems((prev) => prev.filter((item) => item.id !== id))
-        )
-        .catch((err) => console.error(`Failed to sync: ${err}`));
-  };
-
-  const addTodo = (todo: Todo) => {
-    if (online) {
-      todoService
-        .postTodo(todo)
-        .then((newTodo) => {
-          setTodos([...todos, newTodo]);
-          offlineStorage.upsertTodo(newTodo);
-        })
-        .catch((err) => {
-          console.error("Failed to add todo:", err);
-          //Implement adding error to popup
-        });
-    } else {
-      console.log(todo);
-      offlineStorage.upsertTodo(todo);
-      setTodos([...todos, todo]);
-    }
-    setAddViewVisible(false);
-  };
-
-  const SingleRoute = () => (
-    <SinglePage
-      data={todos.filter(
-        (item) =>
-          item.type === TodoType.CHECK && item.status === TodoStatus.OPEN
-      )}
-      onCheck={(id: string) => changeTodo(id, TodoStatus.DONE)}
-    />
+  const SingleRoute = useCallback(
+    () => (
+      <SinglePage
+        data={todos.filter(
+          (item) =>
+            item.type === TodoType.CHECK && item.status === TodoStatus.OPEN
+        )}
+        onCheck={(id: string) => changeTodo(id, TodoStatus.DONE)}
+      />
+    ),
+    [todos]
   );
 
-  const DoneRoute = () => (
-    <DonePage
-      data={todos.filter(
-        (item) =>
-          item.type === TodoType.CHECK && item.status === TodoStatus.DONE
-      )}
-      onUncheck={(id: string) => changeTodo(id, TodoStatus.OPEN)}
-      onDelete={(id: string) => changeTodo(id, TodoStatus.DELETED)}
-    />
+  const DoneRoute = useCallback(
+    () => (
+      <DonePage
+        data={todos.filter(
+          (item) =>
+            item.type === TodoType.CHECK && item.status === TodoStatus.DONE
+        )}
+        onUncheck={(id: string) => changeTodo(id, TodoStatus.OPEN)}
+        onDelete={(id: string) => changeTodo(id, TodoStatus.DELETED)}
+      />
+    ),
+    [todos]
   );
 
   const SafeView = Platform.OS === "web" ? View : SafeAreaView;
@@ -142,13 +168,13 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
     <SafeView style={styles.root} testID="Root">
       <AddView
         isVisible={addViewVisible}
-        onAdd={(todo: Todo) => addTodo(todo)}
-        onClose={() => setAddViewVisible(false)}
+        onAdd={addTodo}
+        onClose={toggleAddViewVisibility}
       />
-      <VoiceView
-        isRecognizing={isRecognizingSpeech}
-        setIsRecognizing={setIsRecognizingSpeech}
-        onClose={handleTranscribedSpeech}
+      <SpeechView
+        isVisible={speechViewVisibility}
+        setIsVisible={setSpeechViewVisibility}
+        onStopRecognizing={handleTranscribedSpeech}
       />
       <TabView
         testID="TabView"
@@ -176,20 +202,20 @@ export const Root = ({ todos, setTodos, online, offlineStorage }: RootProp) => {
       />
       <View style={styles.floatingPressableView}>
         <FloatingPressable
-          onPress={() => setAddViewVisible(true)}
+          onPress={toggleAddViewVisibility}
           style={styles.roundPressableButton}
           iconName={"add"}
         />
         <FloatingPressable
-          onPress={() => setIsRecognizingSpeech(true)}
+          onPress={toggleSpeechViewVisibility}
           style={styles.roundPressableButton}
           iconName={"mic"}
         />
       </View>
       <InfoPopup
         data={popupItems}
-        onUndo={(id: string) => undoChange(id)}
-        onTimeout={(id: string) => syncOnTimeout(id)}
+        onUndo={undoChange}
+        onTimeout={syncOnTimeout}
       />
     </SafeView>
   );

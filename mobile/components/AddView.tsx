@@ -25,6 +25,8 @@ export const AddView = ({ isVisible, onAdd, onClose }: AddViewProps) => {
       setSummary("");
       setDescription("");
       setType(TodoType.CHECK);
+    } else {
+      summaryRef.current?.focus();
     }
   }, [isVisible]);
 
@@ -37,7 +39,6 @@ export const AddView = ({ isVisible, onAdd, onClose }: AddViewProps) => {
       creationDate: new Date(),
       type: type
     });
-    onClose();
   };
 
   return (
@@ -46,7 +47,6 @@ export const AddView = ({ isVisible, onAdd, onClose }: AddViewProps) => {
       animationType="fade"
       transparent={true}
       style={styles.fullScreenView}
-      onShow={() => summaryRef.current?.focus()}
     >
       <View style={styles.addView}>
         <TextInput
@@ -54,14 +54,14 @@ export const AddView = ({ isVisible, onAdd, onClose }: AddViewProps) => {
           style={{ ...styles.addText, minWidth: 400 }}
           placeholder="todo name..."
           value={summary}
-          onChangeText={(text) => setSummary(text)}
+          onChangeText={setSummary}
         />
         <TextInput
           ref={descriptionRef}
           style={{ ...styles.addText, minWidth: 400 }}
           placeholder="description (optional)..."
           value={description}
-          onChangeText={(text) => setDescription(text)}
+          onChangeText={setDescription}
         />
         <View style={{ flexDirection: "row", marginTop: 10 }}>
           <Pressable

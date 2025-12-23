@@ -15,6 +15,7 @@ export const colors = {
 export const styles = StyleSheet.create({
   loadingView: {
     flex: 1,
+    backgroundColor: colors.primaryDark,
     justifyContent: "center",
     alignItems: "center"
   },
@@ -128,11 +129,6 @@ export const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-evenly"
-  },
-  speechIndicator: {
-    position: "absolute",
-    bottom: 300,
-    alignSelf: "center"
   },
   pressableRadioSelected: {
     flex: 1,

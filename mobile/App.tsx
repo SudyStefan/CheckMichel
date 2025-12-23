@@ -37,15 +37,12 @@ export default function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <View style={styles.loadingView}>
-        <ActivityIndicator size="large" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-  return (
+  return loading ? (
+    <View style={styles.loadingView}>
+      <ActivityIndicator size={80} />
+      <Text style={styles.itemText}>Loading...</Text>
+    </View>
+  ) : (
     <GestureHandlerRootView>
       <Root
         todos={todos}
